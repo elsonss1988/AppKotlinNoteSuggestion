@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories_array">
+        <item>@string/movie</item>
+        <item>@string/serie</item>
+        <item>@string/book</item>
+        <item>@string/restaurant</item>
+        <item>@string/travel</item>
+        <item>@string/tour</item>
+        <item>@string/other</item>
+    </string-array>
+
+    <string-array name="suggestion_name">
+        <item>@string/name1</item>
+        <item>@string/name2</item>
+        <item>@string/name3</item>
+        <item>@string/name4</item>
+        <item>@string/name5</item>
+        <item>@string/name6</item>
+        <item>@string/name7</item>
+        <item>@string/name8</item>
+        <item>@string/name9</item>
+        <item>@string/name10</item>
+    </string-array>
+
+
+    <string-array name="categories">
+        <item>@string/movie</item>
+        <item>@string/serie</item>
+        <item>@string/book</item>
+        <item>@string/restaurant</item>
+        <item>@string/travel</item>
+        <item>@string/tour</item>
+        <item>@string/tour</item>
+        <item>@string/other</item>
+        <item>@string/other</item>
+        <item>@string/other</item>
+    </string-array>
+
+    <integer-array name="priority">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>2</item>
+    </integer-array>
+
+    <integer-array name="is_friend_suggestion">
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+
+    <integer-array name="is_urgent">
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+
+    <integer-array name="is_serie">
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+
+    <integer-array name="Obs">
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+        <item>@string/ObsDefault</item>
+    </integer-array>
+
+</resources>

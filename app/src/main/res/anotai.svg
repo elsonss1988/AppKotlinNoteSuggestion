@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Gradiente de fundo (simulado com círculos) -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4CAF50"/>
+      <stop offset="100%" stop-color="#2E7D32"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Círculo base com gradiente -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad)" stroke="#1B5E20" stroke-width="8"/>
+  
+  <!-- Balão de conversa estilizado -->
+  <path d="M256,140 C190,140 136,186 136,244 C136,280 156,312 186,334 L174,388 L230,358 C238,361 247,362 256,362 C322,362 376,316 376,244 C376,186 322,140 256,140 Z" 
+        fill="#FFFFFF" stroke="#1B5E20" stroke-width="6"/>
+  
+  <!-- Lâmpada estilizada -->
+  <ellipse cx="256" cy="240" rx="35" ry="28" fill="#FFC107" stroke="#F57C00" stroke-width="4"/>
+  <rect x="246" y="268" width="20" height="35" fill="#FFC107" stroke="#F57C00" stroke-width="4"/>
+  <line x1="246" y1="298" x2="266" y2="298" stroke="#F57C00" stroke-width="3"/>
+  
+  <!-- Letra A integrada -->
+  <path d="M245,210 L267,210 L276,235 L236,235 L245,210 Z" fill="#FFC107"/>
+  <path d="M256,210 L256,235" stroke="#F57C00" stroke-width="3" fill="none"/>
+  
+  <!-- Raios de luz -->
+  <line x1="256" y1="185" x2="256" y2="165" stroke="#FFC107" stroke-width="5" stroke-linecap="round"/>
+  <line x1="295" y1="210" x2="315" y2="200" stroke="#FFC107" stroke-width="5" stroke-linecap="round"/>
+  <line x1="217" y1="210" x2="197" y2="200" stroke="#FFC107" stroke-width="5" stroke-linecap="round"/>
+</svg>

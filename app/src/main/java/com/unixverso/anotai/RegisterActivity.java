@@ -1,5 +1,6 @@
 package com.unixverso.anotai;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -123,21 +124,14 @@ public class RegisterActivity extends AppCompatActivity {
         String nome = editTextSuggestion.getText().toString().trim();
 
         if (nome.isEmpty()) {
-            Toast.makeText(
-                    this,
-                    R.string.fill_suggestion,
-                    Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(this, R.string.fill_suggestion, Toast.LENGTH_SHORT).show();
             editTextSuggestion.requestFocus();
             return;
         }
 
         int selectedRadioId = radioGroupPrior.getCheckedRadioButtonId();
         if (selectedRadioId == -1) {
-            Toast.makeText(
-                    this,
-                    R.string.choose_prior,
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.choose_prior, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -146,32 +140,30 @@ public class RegisterActivity extends AppCompatActivity {
         String category = spinnerCategory.getSelectedItem().toString();
         String obs = editTextObs.getText().toString();
 
-        StringBuilder caracteristicas = new StringBuilder();
-        if (checkBoxFromFriend.isChecked()) {
-            caracteristicas.append(getString(R.string.from_friend_value));
-        }
-        if (checkBoxHighLevel.isChecked()) {
-            caracteristicas.append(getString(R.string.high_level_value));
-        }
-        if (checkBoxIsSeries.isChecked()) {
-            caracteristicas.append(getString(R.string.is_serie_value));
+        EnumPriority priority;
+        if (radioHigh.isChecked()) {
+            priority = EnumPriority.ALTA;
+        } else if (radioMedium.isChecked()) {
+            priority = EnumPriority.MEDIA;
+        } else {
+            priority = EnumPriority.BAIXA;
         }
 
-        String caracteristicasText = caracteristicas.length() > 0
-                ? caracteristicas.substring(0, caracteristicas.length() - 2)
-                : "Nenhuma";
+        Suggestion suggestion = new Suggestion(
+                System.currentTimeMillis(), // id simples
+                nome,
+                category,
+                priority,
+                checkBoxFromFriend.isChecked(),
+                checkBoxHighLevel.isChecked(),
+                checkBoxIsSeries.isChecked(),
+                obs
+        );
 
-        String mensagem = "Sugestão salva:\n" +
-                "Nome: " + nome + "\n" +
-                "Categoria: " + category + "\n" +
-                "Prioridade: " + prior + "\n" +
-                "Características: " + caracteristicasText;
+        Intent intent = new Intent();
+        intent.putExtra("suggestion", suggestion);
 
-        if (!obs.isEmpty()) {
-            mensagem += "\nObs: " + obs;
-        }
-
-        Toast.makeText(this, mensagem, Toast.LENGTH_LONG).show();
-        clearForm();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }

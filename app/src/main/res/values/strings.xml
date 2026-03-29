@@ -42,6 +42,17 @@
     <string name="name10">Testa Claude Code</string>
     <string name="ObsDefault">Sem Observaçao</string>
     <string name="none_obs">Nenhuma observação</string>
+    <string name="uftpr">Uftpr</string>
+    <string name="UTFPR">Universidade Tecnologica Federal do Parana</string>
+    <string name="utfpr">Universidade Tecnologica Federal do Parana</string>
+    <string name="description">App para anotação de sugestão e indicações</string>
+    <string name="autoria">Elson Santos</string>
+    <string name="About">Sobre</string>
+    <string name="title_list_suggestion">Lista de Sugestões</string>
+    <string name="sobre_anotai">Sobre o Anotai</string>
+    <string name="emailAuthor">elsonss1988@gmail.com</string>
+    <string name="curso">Especialização em tecnologia Java</string>
+    <string name="cadastro">Cadastro</string>
 
 
 </resources>

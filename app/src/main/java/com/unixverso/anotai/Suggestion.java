@@ -1,8 +1,9 @@
 package com.unixverso.anotai;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Suggestion {
+public class Suggestion implements Serializable {
 
     private long id;
     private String name;
@@ -16,7 +17,7 @@ public class Suggestion {
     public Suggestion() {
     }
 
-    public Suggestion(
+    public Suggestion (
             Long id,
             String name,
             String category,

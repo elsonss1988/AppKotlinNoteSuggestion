@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fundo arredondado -->
+  <rect width="512" height="512" fill="#3F51B5" rx="120" ry="120"/>
+  
+  <!-- Letra S estilizada -->
+  <path d="M320,180 C320,140 290,120 256,120 C222,120 192,140 192,170 C192,195 208,210 228,218 C248,226 280,232 280,258 C280,283 260,300 236,300 C212,300 192,280 192,260" 
+        stroke="#FFFFFF" stroke-width="32" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Ponto de ideia/lâmpada no canto -->
+  <circle cx="400" cy="120" r="35" fill="#FFC107"/>
+  <path d="M400,155 L400,175 M400,185 L400,190" stroke="#F57C00" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <text x="400" y="130" text-anchor="middle" font-family="Arial" font-size="28" fill="#3F51B5" font-weight="bold">!</text>
+</svg>

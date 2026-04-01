@@ -46,6 +46,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:minHeight="48dp"
+            android:onClick="openWebSite"
             android:text="@string/utfpr"
             app:layout_constraintBottom_toTopOf="@+id/textViewDescription"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,10 +74,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:minHeight="48dp"
+            android:onClick="openLink"
             android:text="@string/autoria"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewDescription" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewDescription"
+            tools:ignore="OnClick" />
 
         <TextView
             android:id="@+id/textViewEmailAuthor"
@@ -84,7 +89,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:autoLink="email"
             android:text="@string/emailAuthor"
+            android:textColor="#DD2C00"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewAutoria" />

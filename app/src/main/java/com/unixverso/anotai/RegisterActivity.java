@@ -2,9 +2,9 @@ package com.unixverso.anotai;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -12,6 +12,8 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -19,34 +21,41 @@ import java.util.Arrays;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText editTextSuggestion,editTextObs;
+    private EditText editTextSuggestion, editTextObs;
     private Spinner spinnerCategory;
     private RadioGroup radioGroupPrior;
-    private RadioButton radioLow,radioMedium,radioHigh;
-    private CheckBox checkBoxFromFriend,checkBoxHighLevel,checkBoxIsSeries;
-    private Button btnSave,btnClear;
+    private RadioButton radioLow, radioMedium, radioHigh;
+    private CheckBox checkBoxFromFriend, checkBoxHighLevel, checkBoxIsSeries;
     private ArrayList<String> categories;
-
-//    private final String[] categories = {
-//            getString(R.string.movie),
-//            getString(R.string.serie),
-//            getString(R.string.book),
-//            getString(R.string.restaurant),
-//            getString(R.string.travel),
-//            getString(R.string.tour),
-//            getString(R.string.other)
-//    };
+    
+    private Suggestion suggestionToEdit;
+    private int editPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         String[] array = getResources().getStringArray(R.array.categories_array);
         categories = new ArrayList<>(Arrays.asList(array));
 
         initComponents();
         setupSpinner();
-        setupButtons();
+
+        Intent intent = getIntent();
+        if (intent.hasExtra("suggestion")) {
+            suggestionToEdit = (Suggestion) intent.getSerializableExtra("suggestion");
+            editPosition = intent.getIntExtra("position", -1);
+            populateForm();
+            setTitle(getString(R.string.editar));
+        } else {
+            setTitle(getString(R.string.title_register_suggestion));
+        }
     }
 
     private void initComponents() {
@@ -60,14 +69,9 @@ public class RegisterActivity extends AppCompatActivity {
         checkBoxFromFriend = findViewById(R.id.checkBoxFromFriend);
         checkBoxHighLevel = findViewById(R.id.checkBoxHighLevel);
         checkBoxIsSeries = findViewById(R.id.checkBoxIsSeries);
-        btnSave = findViewById(R.id.btnSave);
-        btnClear = findViewById(R.id.btnClear);
     }
 
-
     private void setupSpinner() {
-
-
         if (categories != null && categories.size() > 0) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
                     this,
@@ -79,23 +83,29 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-
-    private void setupButtons() {
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                salvarForm();
+    private void populateForm() {
+        if (suggestionToEdit != null) {
+            editTextSuggestion.setText(suggestionToEdit.getName());
+            editTextObs.setText(suggestionToEdit.getObs());
+            
+            if (suggestionToEdit.getPriority() == EnumPriority.ALTA) {
+                radioHigh.setChecked(true);
+            } else if (suggestionToEdit.getPriority() == EnumPriority.MEDIA) {
+                radioMedium.setChecked(true);
+            } else {
+                radioLow.setChecked(true);
             }
-        });
 
-        btnClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearForm();
+            checkBoxFromFriend.setChecked(suggestionToEdit.isFriendSuggestion());
+            checkBoxHighLevel.setChecked(suggestionToEdit.isUrgent());
+            checkBoxIsSeries.setChecked(suggestionToEdit.isSerie());
+
+            int spinnerPos = categories.indexOf(suggestionToEdit.getCategory());
+            if (spinnerPos != -1) {
+                spinnerCategory.setSelection(spinnerPos);
             }
-        });
+        }
     }
-
 
     private void clearForm() {
         editTextSuggestion.setText("");
@@ -112,13 +122,11 @@ public class RegisterActivity extends AppCompatActivity {
 
         Toast.makeText(
                 this,
-                "Formulário limpo com sucesso!",
+                R.string.form_cleared,
                 Toast.LENGTH_SHORT).show();
 
         editTextSuggestion.requestFocus();
     }
-
-
 
     private void salvarForm() {
         String nome = editTextSuggestion.getText().toString().trim();
@@ -135,8 +143,6 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        RadioButton radioButtonSelecionado = findViewById(selectedRadioId);
-        String prior = radioButtonSelecionado.getText().toString();
         String category = spinnerCategory.getSelectedItem().toString();
         String obs = editTextObs.getText().toString();
 
@@ -149,21 +155,60 @@ public class RegisterActivity extends AppCompatActivity {
             priority = EnumPriority.BAIXA;
         }
 
-        Suggestion suggestion = new Suggestion(
-                System.currentTimeMillis(), // id simples
-                nome,
-                category,
-                priority,
-                checkBoxFromFriend.isChecked(),
-                checkBoxHighLevel.isChecked(),
-                checkBoxIsSeries.isChecked(),
-                obs
-        );
+        Suggestion suggestion;
+        if (suggestionToEdit != null) {
+            suggestion = suggestionToEdit;
+            suggestion.setName(nome);
+            suggestion.setCategory(category);
+            suggestion.setPriority(priority);
+            suggestion.setFriendSuggestion(checkBoxFromFriend.isChecked());
+            suggestion.setUrgent(checkBoxHighLevel.isChecked());
+            suggestion.setSerie(checkBoxIsSeries.isChecked());
+            suggestion.setObs(obs);
+        } else {
+            suggestion = new Suggestion(
+                    System.currentTimeMillis(),
+                    nome,
+                    category,
+                    priority,
+                    checkBoxFromFriend.isChecked(),
+                    checkBoxHighLevel.isChecked(),
+                    checkBoxIsSeries.isChecked(),
+                    obs
+            );
+        }
 
         Intent intent = new Intent();
         intent.putExtra("suggestion", suggestion);
+        if (editPosition != -1) {
+            intent.putExtra("position", editPosition);
+        }
 
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.register_opcoes, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menuItemSalvar) {
+            salvarForm();
+            return true;
+        } else if (id == R.id.menuItemLimpar) {
+            clearForm();
+            return true;
+        } else if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 }

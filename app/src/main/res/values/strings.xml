@@ -48,11 +48,17 @@
     <string name="description">App para anotação de sugestão e indicações</string>
     <string name="autoria">Elson Santos</string>
     <string name="About">Sobre</string>
-    <string name="title_list_suggestion">Lista de Sugestões</string>
     <string name="sobre_anotai">Sobre o Anotai</string>
     <string name="emailAuthor">elsonss1988@gmail.com</string>
     <string name="curso">Especialização em tecnologia Java</string>
     <string name="cadastro">Cadastro</string>
-
-
+    <string name="title_list_suggestion">Lista de Sugestões</string>
+    <string name="adicionar">Adicionar</string>
+    <string name="sobre">Sobre</string>
+    <string name="salvar">Salvar</string>
+    <string name="limpar">Limpar</string>
+    <string name="form_cleared">Formulário limpo com sucesso!</string>
+    <string name="title_register_suggestion">Nova Sugestão</string>
+    <string name="editar">Editar</string>
+    <string name="excluir">Excluir</string>
 </resources>

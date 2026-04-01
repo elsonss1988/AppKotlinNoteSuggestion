@@ -5,4 +5,7 @@
     <color name="yellow">#FFFFBE02</color>
     <color name="dark_yellow">#B9BA9506</color>
     <color name="dark_gray">#FFAAAAAA</color>
+    <color name="dark_blue">#FF0000FF</color>
+    <color name="light_blue">#FFADD8E6</color>
+
 </resources>

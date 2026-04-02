@@ -1,6 +1,10 @@
 package com.unixverso.anotai;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -11,13 +15,21 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class ListActivity extends AppCompatActivity {
 
@@ -27,41 +39,122 @@ public class ListActivity extends AppCompatActivity {
     private static final int REQUEST_REGISTER = 1;
     private static final int REQUEST_EDIT = 2;
 
+    private TextView textViewFeatured, textViewFeaturedValue;
+    private static final String KEY_SUGGESTION_LIST = "suggestionListJson";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applySettings();
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        setTitle(getString(R.string.title_list_suggestion));
+        updateTitle();
 
         listViewSuggestion = findViewById(R.id.listViewSuggestion);
+        textViewFeatured = findViewById(R.id.textViewFeatured);
+        textViewFeaturedValue = findViewById(R.id.textViewFeaturedValue);
         
-        initializeSuggestionList();
+        loadSuggestionList();
         setupContextMenu();
 
         listViewSuggestion.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Suggestion selectedSuggestion = suggestionList.get(i);
-                String message = "Sua sugestão clicada é \""
-                        + selectedSuggestion.getCategory() + ": "
-                        + selectedSuggestion.getName() + "\"\n";
+                String[] categories = getResources().getStringArray(R.array.categories_array);
+                String category = "";
+                if (selectedSuggestion.getCategoryIndex() >= 0 && selectedSuggestion.getCategoryIndex() < categories.length) {
+                    category = categories[selectedSuggestion.getCategoryIndex()];
+                }
+                
+                String message = getString(R.string.app_name) + ": "
+                        + category + " - "
+                        + selectedSuggestion.getName();
 
-                Toast.makeText(ListActivity.this, message, Toast.LENGTH_LONG).show();
+                Toast.makeText(ListActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void updateTitle() {
+        setTitle(getString(R.string.title_list_suggestion));
+    }
+
+    private void applySettings() {
+        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        
+        // Aplicar Idioma
+        String lang = prefs.getString(SettingsActivity.KEY_LANG, SettingsActivity.LANG_PT);
+        updateLocale(lang);
+
+        // Aplicar Modo Noturno
+        boolean isDark = prefs.getBoolean(SettingsActivity.KEY_DARK_MODE, false);
+        if (isDark) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
+
+    private void updateLocale(String langCode) {
+        Locale locale = new Locale(langCode);
+        Locale.setDefault(locale);
+        Resources res = getResources();
+        Configuration config = new Configuration(res.getConfiguration());
+        config.setLocale(locale);
+        res.updateConfiguration(config, res.getDisplayMetrics());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        
+        // Aplica as configurações novamente ao voltar da tela de Settings
+        applySettings();
+        
+        // Atualiza o título da tela se o idioma mudou
+        updateTitle();
+
+        // Recarrega a lista para garantir persistência e ordenação
+        loadSuggestionList();
+        
+        // Atualiza visibilidade do destaque
+        if (suggestionList != null && !suggestionList.isEmpty()) {
+            textViewFeatured.setVisibility(View.VISIBLE);
+            textViewFeaturedValue.setVisibility(View.VISIBLE);
+        } else {
+            textViewFeatured.setVisibility(View.GONE);
+            textViewFeaturedValue.setVisibility(View.GONE);
+        }
+
+        sortList();
+        suggestionAdapter.notifyDataSetChanged();
+    }
+
+    private void sortList() {
+        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        int sortOrder = prefs.getInt(SettingsActivity.KEY_SORT_ORDER, SettingsActivity.SORT_AZ);
+
+        if (suggestionList != null && !suggestionList.isEmpty()) {
+            Collections.sort(suggestionList, (s1, s2) -> {
+                if (sortOrder == SettingsActivity.SORT_AZ) {
+                    return s1.getName().compareToIgnoreCase(s2.getName());
+                } else {
+                    return s2.getName().compareToIgnoreCase(s1.getName());
+                }
+            });
+        }
+    }
+
     private void setupContextMenu() {
-        // Altera para CHOICE_MODE_MULTIPLE_MODAL para ativar o MultiChoiceModeListener
         listViewSuggestion.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listViewSuggestion.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 int selectedCount = listViewSuggestion.getCheckedItemCount();
-                mode.setTitle(selectedCount + " " + getString(R.string.title_list_suggestion));
+                mode.setTitle(selectedCount + " " + getString(R.string.item_escolhido));
                 
-                // Opcional: Desabilitar editar se mais de um item estiver selecionado
                 Menu menu = mode.getMenu();
                 MenuItem editItem = menu.findItem(R.id.menuItemEditar);
                 if (editItem != null) {
@@ -110,7 +203,7 @@ public class ListActivity extends AppCompatActivity {
                 intent.putExtra("suggestion", suggestion);
                 intent.putExtra("position", position);
                 startActivityForResult(intent, REQUEST_EDIT);
-                break; // Edita apenas o primeiro selecionado
+                break;
             }
         }
         mode.finish();
@@ -118,21 +211,55 @@ public class ListActivity extends AppCompatActivity {
 
     private void deleteSelected(ActionMode mode) {
         SparseBooleanArray checked = listViewSuggestion.getCheckedItemPositions();
-        // Remove de trás para frente para não alterar os índices durante a remoção
         for (int i = checked.size() - 1; i >= 0; i--) {
             int position = checked.keyAt(i);
             if (checked.valueAt(i)) {
                 suggestionList.remove(position);
             }
         }
+        saveSuggestionList();
         suggestionAdapter.notifyDataSetChanged();
         mode.finish();
     }
 
-    private void initializeSuggestionList() {
-        suggestionList = new ArrayList<>();
-        suggestionAdapter = new SuggestionAdapter(this, suggestionList);
-        listViewSuggestion.setAdapter(suggestionAdapter);
+    private void loadSuggestionList() {
+        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        String json = prefs.getString(KEY_SUGGESTION_LIST, null);
+        
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<Suggestion>>() {}.getType();
+            suggestionList = gson.fromJson(json, type);
+        } else {
+            suggestionList = new ArrayList<>();
+        }
+        
+        if (suggestionAdapter == null) {
+            suggestionAdapter = new SuggestionAdapter(this, suggestionList);
+            listViewSuggestion.setAdapter(suggestionAdapter);
+        } else {
+            // Se o adaptador já existe, apenas atualiza a referência da lista
+            // Isso evita criar novos adaptadores no onResume desnecessariamente
+            // mas garante que a lista atual seja a carregada do SharedPreferences
+            try {
+                java.lang.reflect.Field field = SuggestionAdapter.class.getDeclaredField("listaPessoas");
+                field.setAccessible(true);
+                field.set(suggestionAdapter, suggestionList);
+            } catch (Exception e) {
+                // Fallback se a reflexão falhar
+                suggestionAdapter = new SuggestionAdapter(this, suggestionList);
+                listViewSuggestion.setAdapter(suggestionAdapter);
+            }
+        }
+    }
+
+    private void saveSuggestionList() {
+        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(suggestionList);
+        editor.putString(KEY_SUGGESTION_LIST, json);
+        editor.apply();
     }
 
     @Override
@@ -150,6 +277,8 @@ public class ListActivity extends AppCompatActivity {
                         suggestionList.set(position, suggestion);
                     }
                 }
+                sortList();
+                saveSuggestionList();
                 suggestionAdapter.notifyDataSetChanged();
             }
         }
@@ -157,6 +286,11 @@ public class ListActivity extends AppCompatActivity {
 
     public void openAbout() {
         Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
+    }
+
+    public void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
@@ -177,6 +311,9 @@ public class ListActivity extends AppCompatActivity {
 
         if (id == R.id.menuItemAdicionar) {
             openRegister();
+            return true;
+        } else if (id == R.id.menuItemConfiguracoes) {
+            openSettings();
             return true;
         } else if (id == R.id.menuItemSobre) {
             openAbout();

@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ThemeStyleIcons">
         <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".ListActivity" />
+        <activity
             android:name=".AboutActivity"
             android:exported="false"
             android:parentActivityName=".ListActivity" />

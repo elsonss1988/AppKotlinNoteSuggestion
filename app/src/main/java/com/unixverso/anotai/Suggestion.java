@@ -7,7 +7,7 @@ public class Suggestion implements Serializable {
 
     private long id;
     private String name;
-    private String Category;
+    private int categoryIndex; // Armazena o índice em vez da String traduzida
     private EnumPriority priority;
     private boolean isFriendSuggestion;
     private boolean isUrgent;
@@ -20,7 +20,7 @@ public class Suggestion implements Serializable {
     public Suggestion (
             Long id,
             String name,
-            String category,
+            int categoryIndex,
             EnumPriority priority,
             boolean isFriendSuggestion,
             boolean isUrgent,
@@ -28,7 +28,7 @@ public class Suggestion implements Serializable {
             String Obs) {
         this.id = id;
         this.name = name;
-        Category = category;
+        this.categoryIndex = categoryIndex;
         this.priority = priority;
         this.isFriendSuggestion = isFriendSuggestion;
         this.isUrgent = isUrgent;
@@ -44,12 +44,12 @@ public class Suggestion implements Serializable {
         this.name = name;
     }
 
-    public String getCategory() {
-        return Category;
+    public int getCategoryIndex() {
+        return categoryIndex;
     }
 
-    public void setCategory(String category) {
-        Category = category;
+    public void setCategoryIndex(int categoryIndex) {
+        this.categoryIndex = categoryIndex;
     }
 
     public EnumPriority getPriority() {
@@ -110,15 +110,5 @@ public class Suggestion implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
-    }
-
-    @Override
-    public String toString() {
-        return " " + name + '\n' +
-                " Category=" + Category +"\n"+
-                " priority=" + priority +"\n"+
-                " isFriendSuggestion=" + isFriendSuggestion +"\n"+
-                " isUrgent=" + isUrgent +"\n"+
-                " isSerie=" + isSerie+"\n" ;
     }
 }

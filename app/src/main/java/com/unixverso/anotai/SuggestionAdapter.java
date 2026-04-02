@@ -28,7 +28,6 @@ public class SuggestionAdapter extends BaseAdapter {
     public SuggestionAdapter(Context context, List<Suggestion> listaPessoas) {
         this.context = context;
         this.listaPessoas = listaPessoas;
-        tipos = context.getResources().getStringArray(R.array.categories_array);
     }
 
     @Override
@@ -50,7 +49,7 @@ public class SuggestionAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         SuggestionHolder holder;
         if(view == null){
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.linha_personalizadas,viewGroup,false);
 
             holder = new SuggestionHolder();
@@ -66,9 +65,17 @@ public class SuggestionAdapter extends BaseAdapter {
         }else{
             holder = (SuggestionHolder) view.getTag();
         }
+        
+        // Atualiza a lista de tipos traduzidos para o idioma atual
+        tipos = context.getResources().getStringArray(R.array.categories_array);
+        
         Suggestion suggestion = listaPessoas.get(i);
         holder.textViewNameValue.setText(suggestion.getName());
-        holder.textViewCategoryValue.setText((suggestion.getCategory()));
+        
+        // Recupera a categoria traduzida baseada no índice salvo
+        if (suggestion.getCategoryIndex() >= 0 && suggestion.getCategoryIndex() < tipos.length) {
+            holder.textViewCategoryValue.setText(tipos[suggestion.getCategoryIndex()]);
+        }
 
         switch(suggestion.getPriority()){
             case ALTA:

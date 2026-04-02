@@ -3,13 +3,12 @@ package com.unixverso.anotai;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class AboutActivity extends AppCompatActivity {
 
@@ -19,6 +18,10 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
         setTitle(getString(R.string.sobre_anotai));
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     public void openLinkedin(View view) {
@@ -37,10 +40,10 @@ public class AboutActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
-    public void sendEmail(View view) {
 
+    public void sendEmail(View view) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:")); // garante que só apps de email respondam
+        intent.setData(Uri.parse("mailto:"));
 
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"suporte@anotai.com"});
         intent.putExtra(Intent.EXTRA_SUBJECT, "Dúvida sobre o app Anotaí");
@@ -60,5 +63,12 @@ public class AboutActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
-

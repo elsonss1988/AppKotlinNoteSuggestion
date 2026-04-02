@@ -1,6 +1,8 @@
 package com.unixverso.anotai;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -55,6 +58,27 @@ public class RegisterActivity extends AppCompatActivity {
             setTitle(getString(R.string.editar));
         } else {
             setTitle(getString(R.string.title_register_suggestion));
+            checkAutoFill();
+        }
+    }
+
+    private void checkAutoFill() {
+        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        boolean autoFill = prefs.getBoolean(SettingsActivity.KEY_AUTO_FILL, false);
+        
+        if (autoFill) {
+            String[] suggestions = getResources().getStringArray(R.array.suggestion_name);
+            int randomIndex = new Random().nextInt(suggestions.length);
+            editTextSuggestion.setText(suggestions[randomIndex]);
+            
+            // Categoria aleatória
+            spinnerCategory.setSelection(new Random().nextInt(categories.size()));
+            
+            // Prioridade aleatória
+            int randomPrior = new Random().nextInt(3);
+            if (randomPrior == 0) radioLow.setChecked(true);
+            else if (randomPrior == 1) radioMedium.setChecked(true);
+            else radioHigh.setChecked(true);
         }
     }
 
@@ -100,10 +124,8 @@ public class RegisterActivity extends AppCompatActivity {
             checkBoxHighLevel.setChecked(suggestionToEdit.isUrgent());
             checkBoxIsSeries.setChecked(suggestionToEdit.isSerie());
 
-            int spinnerPos = categories.indexOf(suggestionToEdit.getCategory());
-            if (spinnerPos != -1) {
-                spinnerCategory.setSelection(spinnerPos);
-            }
+            // Usa o índice salvo para selecionar a categoria, garantindo a tradução correta
+            spinnerCategory.setSelection(suggestionToEdit.getCategoryIndex());
         }
     }
 
@@ -143,7 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        String category = spinnerCategory.getSelectedItem().toString();
+        int categoryIndex = spinnerCategory.getSelectedItemPosition();
         String obs = editTextObs.getText().toString();
 
         EnumPriority priority;
@@ -159,7 +181,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (suggestionToEdit != null) {
             suggestion = suggestionToEdit;
             suggestion.setName(nome);
-            suggestion.setCategory(category);
+            suggestion.setCategoryIndex(categoryIndex);
             suggestion.setPriority(priority);
             suggestion.setFriendSuggestion(checkBoxFromFriend.isChecked());
             suggestion.setUrgent(checkBoxHighLevel.isChecked());
@@ -169,7 +191,7 @@ public class RegisterActivity extends AppCompatActivity {
             suggestion = new Suggestion(
                     System.currentTimeMillis(),
                     nome,
-                    category,
+                    categoryIndex,
                     priority,
                     checkBoxFromFriend.isChecked(),
                     checkBoxHighLevel.isChecked(),
